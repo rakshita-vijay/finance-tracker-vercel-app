@@ -21,6 +21,16 @@ export default async function ViewSpendingPage() {
 
   const rows = (transactions ?? []) as Transaction[];
 
+  const totalSpent = rows
+    .filter((r) => r.status === "Completed" && r.amount > 0)
+    .reduce((sum, r) => sum + r.amount, 0);
+
+  const totalRefunded = rows
+    .filter((r) => r.status === "Refunded")
+    .reduce((sum, r) => sum + Math.abs(r.amount), 0);
+
+  const netSpent = totalSpent - totalRefunded;
+
   return (
     <div>
       <h1>📊 View Spending</h1>
@@ -30,6 +40,14 @@ export default async function ViewSpendingPage() {
       <div className="card">
         <div>Monthly budget = {budget?.monthly ?? 500}</div>
         <div>Yearly budget = {budget?.yearly ?? 6000}</div>
+      </div>
+
+      <div className="divider" />
+      <h3>Spending Summary</h3>
+      <div className="card">
+        <div>Total spent (completed) = {totalSpent.toFixed(2)}</div>
+        <div>Total refunded = {totalRefunded.toFixed(2)}</div>
+        <div><strong>Net spent = {netSpent.toFixed(2)}</strong></div>
       </div>
 
       <div className="divider" />
