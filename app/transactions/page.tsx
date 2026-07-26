@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { addTransactions, type NewTransaction } from "./actions";
 
 const PAYMENT_METHODS = ["Cash", "Credit Card", "Debit Card", "Bank Transfer", "UPI", "Other"];
-const STATUSES = ["Completed", "Pending", "Failed", "Cancelled"];
+const STATUSES = ["Completed", "Pending", "Failed", "Cancelled", "Refunded"];
 
 function emptyRow(): NewTransaction {
   return { date: "", description: "", amount: 0, paymentMethod: "Cash", status: "Completed", notes: "" };
