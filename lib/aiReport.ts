@@ -1,18 +1,12 @@
-import { GoogleGenAI } from "@google/genai";
 import { transactionsToAsciiTable } from "./asciiTable";
+import { callGemini } from "./gemini";
+import { ensureAsciiTablesFenced } from "./markdownFix";
 import type { Budget, Transaction } from "./types";
 
 export async function generateFinancialReport(
   transactions: Transaction[],
   budget: Budget
 ): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY environment variable is not set.");
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
-
   const table = transactionsToAsciiTable(transactions);
 
   const prompt = `You are a senior financial strategy consultant (ex-McKinsey background) producing a
@@ -38,11 +32,7 @@ ${table}
 
 Output only the Markdown report, no commentary before or after it.`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3.5-flash",
-    contents: prompt,
-  });
-  const raw = response.text ?? "";
+  const raw = await callGemini(prompt);
 
-  return raw.replace(/^```markdown/, "").replace(/```$/, "").trim();
+  return ensureAsciiTablesFenced(raw.replace(/^```markdown/, "").replace(/```$/, "").trim());
 }

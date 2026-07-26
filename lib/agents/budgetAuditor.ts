@@ -1,5 +1,6 @@
 import { callGemini, stripFences } from "../gemini";
 import type { BudgetMathResult } from "../budgetMath";
+import { ensureAsciiTablesFenced } from "../markdownFix";
 
 export type BudgetCrossCheckResult = {
   reportMarkdown: string;
@@ -44,7 +45,9 @@ Respond with ONLY a JSON object, no markdown fencing, no commentary, in exactly 
     const parsed = JSON.parse(cleaned);
     const corrected = parsed.correctedReportMarkdown;
     return {
-      reportMarkdown: typeof corrected === "string" && corrected.trim() ? corrected : reportMarkdown,
+      reportMarkdown: ensureAsciiTablesFenced(
+        typeof corrected === "string" && corrected.trim() ? corrected : reportMarkdown
+      ),
       discrepancies: Array.isArray(parsed.discrepancies) ? parsed.discrepancies.map(String) : [],
     };
   } catch {
@@ -52,7 +55,7 @@ Respond with ONLY a JSON object, no markdown fencing, no commentary, in exactly 
     // rather than silently discarding it, but surface that the audit itself
     // couldn't run this time.
     return {
-      reportMarkdown,
+      reportMarkdown: ensureAsciiTablesFenced(reportMarkdown),
       discrepancies: ["Budget auditor agent did not return parseable JSON - cross-check skipped this run."],
     };
   }

@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { deleteReport } from "./actions";
 import type { Report } from "@/lib/types";
+import Markdown from "@/app/components/Markdown";
 
 export default function ReportHistoryItem({ report }: { report: Report }) {
   const [open, setOpen] = useState(false);
@@ -36,11 +37,17 @@ export default function ReportHistoryItem({ report }: { report: Report }) {
           </button>
         </div>
       </div>
-      {open && <div className="report-body" style={{ marginTop: 12 }}>{report.content}</div>}
+      {open && (
+        <div style={{ marginTop: 12 }}>
+          <Markdown content={report.content} />
+        </div>
+      )}
       {open && report.analysis && (
         <details style={{ marginTop: 12 }}>
           <summary>Analyst notes (raw agent output, saved as an audit trail)</summary>
-          <div className="report-body" style={{ marginTop: 8 }}>{report.analysis}</div>
+          <div style={{ marginTop: 8 }}>
+            <Markdown content={report.analysis} />
+          </div>
         </details>
       )}
     </div>

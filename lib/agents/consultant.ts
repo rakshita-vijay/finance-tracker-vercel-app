@@ -1,5 +1,6 @@
 import { callGemini, stripFences } from "../gemini";
 import type { Budget } from "../types";
+import { ensureAsciiTablesFenced } from "../markdownFix";
 
 /**
  * Port of the "rep_generator" Agent + "to_do_rep_generation" Task from
@@ -55,5 +56,5 @@ ${prettyTable}
 Expected output: the full report in Markdown format with the 5 sections above plus the Appendix. Output only the Markdown report, no commentary before or after it.`;
 
   const raw = await callGemini(prompt);
-  return stripFences(raw);
+  return ensureAsciiTablesFenced(stripFences(raw));
 }
