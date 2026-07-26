@@ -25,23 +25,15 @@ export default function LoginPage() {
       <h1>🔐 {mode === "login" ? "Login" : "Register"}</h1>
       <div className="card">
         <form action={handleSubmit}>
-          {mode === "login" ? (
-            <div className="field">
-              <label>Email or Username</label>
-              <input name="identifier" type="text" required />
-            </div>
-          ) : (
-            <>
-              <div className="field">
-                <label>Email</label>
-                <input name="email" type="email" required />
+          <div className="field">
+            <label>Email or Username</label>
+            <input name="identifier" type="text" required />
+            {mode === "register" && (
+              <div className="pill" style={{ marginTop: 4 }}>
+                Enter an email if you want account recovery, or just a username for a quick signup.
               </div>
-              <div className="field">
-                <label>Username</label>
-                <input name="username" type="text" required minLength={3} maxLength={32} />
-              </div>
-            </>
-          )}
+            )}
+          </div>
           <div className="field">
             <label>Password</label>
             <input name="password" type="password" required minLength={6} />
