@@ -37,6 +37,12 @@ export default function ReportHistoryItem({ report }: { report: Report }) {
         </div>
       </div>
       {open && <div className="report-body" style={{ marginTop: 12 }}>{report.content}</div>}
+      {open && report.analysis && (
+        <details style={{ marginTop: 12 }}>
+          <summary>Analyst notes (raw agent output, saved as an audit trail)</summary>
+          <div className="report-body" style={{ marginTop: 8 }}>{report.analysis}</div>
+        </details>
+      )}
     </div>
   );
 }

@@ -51,8 +51,13 @@ create table if not exists public.reports (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete cascade not null,
   content text not null,
+  analysis text, -- raw output of the Transaction Intelligence Analyst agent, saved as an audit trail
   created_at timestamptz default now()
 );
+
+-- If your reports table already existed before this column was added, this
+-- picks it up without needing to drop/recreate the table.
+alter table public.reports add column if not exists analysis text;
 
 alter table public.reports enable row level security;
 

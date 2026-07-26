@@ -11,7 +11,7 @@ export default async function GenerateReportPage() {
 
   const { data: reports } = await supabase
     .from("reports")
-    .select("id, content, created_at")
+    .select("id, content, analysis, created_at")
     .eq("user_id", user!.id)
     .order("created_at", { ascending: false });
 

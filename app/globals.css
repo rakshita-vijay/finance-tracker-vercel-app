@@ -157,6 +157,11 @@ th {
   margin: 8px 0;
 }
 
+.msg-warning {
+  color: #b8860b;
+  margin: 8px 0;
+}
+
 .btn-row {
   display: flex;
   gap: 8px;

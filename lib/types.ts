@@ -17,6 +17,7 @@ export type Budget = {
 export type Report = {
   id: string;
   content: string;
+  analysis?: string | null;
   created_at: string;
 };
 
