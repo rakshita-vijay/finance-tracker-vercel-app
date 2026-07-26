@@ -18,6 +18,8 @@ create table if not exists public.transactions (
 
 alter table public.transactions enable row level security;
 
+drop policy if exists "Users manage their own transactions" on public.transactions;
+
 create policy "Users manage their own transactions"
   on public.transactions
   for all
@@ -36,6 +38,8 @@ create table if not exists public.budgets (
 
 alter table public.budgets enable row level security;
 
+drop policy if exists "Users manage their own budget" on public.budgets;
+
 create policy "Users manage their own budget"
   on public.budgets
   for all
@@ -51,6 +55,8 @@ create table if not exists public.reports (
 );
 
 alter table public.reports enable row level security;
+
+drop policy if exists "Users manage their own reports" on public.reports;
 
 create policy "Users manage their own reports"
   on public.reports
@@ -75,3 +81,43 @@ end;
 $$;
 
 grant execute on function public.delete_own_account() to authenticated;
+
+-- Profiles (lets users log in with a username instead of only email) -----
+create table if not exists public.profiles (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  username text unique not null,
+  created_at timestamptz default now()
+);
+
+alter table public.profiles enable row level security;
+
+drop policy if exists "Users manage their own profile" on public.profiles;
+
+create policy "Users manage their own profile"
+  on public.profiles
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- Lets the (logged-out) login form resolve "username" -> email so it can
+-- then call signInWithPassword. Only ever returns the email string - never
+-- the full profiles/users row - to limit what an anonymous caller can learn.
+create or replace function public.email_for_username(input_username text)
+returns text
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  found_email text;
+begin
+  select u.email into found_email
+  from public.profiles p
+  join auth.users u on u.id = p.user_id
+  where p.username = input_username;
+
+  return found_email;
+end;
+$$;
+
+grant execute on function public.email_for_username(text) to anon, authenticated;
